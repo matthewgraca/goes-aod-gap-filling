@@ -1,0 +1,8 @@
+start_date    = "2026-01-02"
+end_date      = "2026-03-03"
+extent        = [-118.615, -117.70, 33.60, 34.35]  # [lon_min, lon_max, lat_min, lat_max]
+quality_level = 15
+cache_path    = "data/aeronet.parquet"
+load_cache    = false
+save_cache    = false
+verbose       = true
