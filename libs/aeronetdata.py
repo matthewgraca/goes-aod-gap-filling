@@ -291,16 +291,27 @@ class AERONETData:
 
 
 if __name__ == "__main__":
-    extent = (-118.615, -117.70, 33.60, 34.35)  # California
+    import sys
+    import tomllib
+
+    config_path = sys.argv[1] if len(sys.argv) > 1 else "libs/aeronet_config.toml"
+    with open(config_path, "rb") as f:
+        cfg = tomllib.load(f)
 
     aeronet = AERONETData(
-        start_date="2023-08-02",
-        end_date="2023-08-03",
-        extent=extent,
-        quality_level=15,
-        save_cache=False,
-        verbose=True,
+        start_date=cfg["start_date"],
+        end_date=cfg["end_date"],
+        extent=tuple(cfg["extent"]),
+        quality_level=cfg.get("quality_level", 15),
+        cache_path=cfg.get("cache_path"),
+        load_cache=cfg.get("load_cache", False),
+        save_cache=cfg.get("save_cache", False),
+        verbose=cfg.get("verbose", False),
     )
+
+    csv_path = f"aeronet_{cfg['start_date']}_{cfg['end_date']}.csv"
+    aeronet.data.to_csv(csv_path, index=False)
+    print(f"Saved to {csv_path}")
 
     print(aeronet.data)
     print(f"\nShape: {aeronet.data.shape}")
