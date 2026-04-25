@@ -1,6 +1,5 @@
 """
-Cache layer: assemble per-timestep input tensors from the cache directory
-produced by ingest.py.
+Preprocress.py assembles per-timestep input tensors.
 
 Cache contents:
     goes.npz          keys: aod, frp, adp_smoke, adp_dust
