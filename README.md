@@ -18,23 +18,13 @@ Due to the increased spatial resolution, our current target area will be reduced
 - Orography -- [ASTER Global Digital Elevation Map](https://asterweb.jpl.nasa.gov/gdem.asp)
 - Fire Detection -- [GOES Fire/Hot Spot Characterization](https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C01520)
 - Smoke Detection -- [GOES Aerosol Detection](https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C01510)
+
 # Running
 
-The pipeline is split into two stages: a host-side **ingest** that pulls raw data into a cache directory, and a Docker-based **training** step that consumes the cache.
+## TODO explain stuff about ingest here.
 
-## 1. Ingest data (host)
 
-Set up the conda env and ingest a date window. AERONET fetch needs your Earthdata creds in `.env` (`EARTHDATA_USERNAME`, `EARTHDATA_PASSWORD`).
-
-```bash
-conda activate wildfire        # or any env with the ingest deps installed
-set -a; source .env; set +a
-python ingest.py --start 2023-08-02 --end 2023-08-03 --cache-dir cache_96 --verbose
-```
-
-This writes `cache_96/` containing `goes.npz`, `hrrr.npz`, `ndvi.npz`, `aeronet.parquet`, and `timestamps.npy`.
-
-## 2. Train (Docker)
+## 1. Train (Docker)
 
 Build the image once:
 
