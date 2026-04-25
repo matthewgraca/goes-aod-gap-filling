@@ -32,7 +32,18 @@ Build the image once:
 docker build -t aod-gapfill .
 ```
 
-Run training, mounting the cache and an outputs directory:
+Run training, mounting the cache and an outputs directory.
+
+**Template** (fill in the placeholders):
+
+```bash
+docker run --rm --gpus all \
+  -v "$(pwd)/<CACHE_DIR>:/app/<CACHE_DIR>" \
+  -v "$(pwd)/<OUTPUTS_DIR>:/app/<OUTPUTS_DIR>" \
+  aod-gapfill --cache-dir /app/<CACHE_DIR> --epochs <N_EPOCHS>
+```
+
+**Example**:
 
 ```bash
 docker run --rm --gpus all \
