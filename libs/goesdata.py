@@ -502,10 +502,12 @@ class GOESData:
                     product=product
                 )
             except FileNotFoundError:
-                # file not found in aws; just ignore since this is just ingest 
+                # file not found in aws; just ignore since this is just ingest
                 if verbose:
                     tqdm.write(
-                        self._filenotfound_error_msg(start_date, end_date)
+                        self._filenotfound_error_msg(
+                            date, date + pd.Timedelta(minutes=59, seconds=59)
+                        )
                     )
                 outages += 1
             except Exception as e:

@@ -100,7 +100,10 @@ class NDVIData:
         if self.VERBOSE < 2:
             print('Submitting job to Harmony...', end= ' ')
 
-        harmony_client = Client() # pulls from .netrc file
+        harmony_client = Client(auth=(
+            os.environ['EARTHDATA_USERNAME'],
+            os.environ['EARTHDATA_PASSWORD'],
+        ))
         request = Request(
             # MODIS/Terra Vegetation Indices 16-Day L3 Global 1km SIN Grid V061
             collection=Collection(id='C2565788905-LPCLOUD'),

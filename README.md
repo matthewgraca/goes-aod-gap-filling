@@ -18,6 +18,48 @@ Due to the increased spatial resolution, our current target area will be reduced
 - Orography -- [ASTER Global Digital Elevation Map](https://asterweb.jpl.nasa.gov/gdem.asp)
 - Fire Detection -- [GOES Fire/Hot Spot Characterization](https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C01520)
 - Smoke Detection -- [GOES Aerosol Detection](https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C01510)
+# Running
+
+The pipeline is split into two stages: a host-side **ingest** that pulls raw data into a cache directory, and a Docker-based **training** step that consumes the cache.
+
+## 1. Ingest data (host)
+
+Set up the conda env and ingest a date window. AERONET fetch needs your Earthdata creds in `.env` (`EARTHDATA_USERNAME`, `EARTHDATA_PASSWORD`).
+
+```bash
+conda activate wildfire        # or any env with the ingest deps installed
+set -a; source .env; set +a
+python ingest.py --start 2023-08-02 --end 2023-08-03 --cache-dir cache_96 --verbose
+```
+
+This writes `cache_96/` containing `goes.npz`, `hrrr.npz`, `ndvi.npz`, `aeronet.parquet`, and `timestamps.npy`.
+
+## 2. Train (Docker)
+
+Build the image once:
+
+```bash
+docker build -t aod-gapfill .
+```
+
+Run training, mounting the cache and an outputs directory:
+
+```bash
+docker run --rm --gpus all \
+  -v "$(pwd)/cache_96:/app/cache_96" \
+  -v "$(pwd)/outputs:/app/outputs" \
+  aod-gapfill --cache-dir /app/cache_96 --epochs 20
+```
+
+Each run lands in a timestamped subdirectory under `outputs/` containing:
+
+- `training_curve.png` — train + val loss per epoch
+- `metrics.json` — pixel-wise and AERONET RMSE / r / NMB
+- `aeronet_scatter.png` — predicted vs AERONET 550 nm
+- `panel_all_timesteps.png` — obs / pred / diff for every valid hour, train/val labeled
+- `prediction.png`, `prediction.npy`, `target_observed.npy` — single-hour comparison
+- `snapshot.pt` — model weights + normalization stats
+
 # References
 [^1]: https://aeronet.gsfc.nasa.gov/new_web/Documents/Aerosol_Optical_Depth.pdf
 [^2]: Lee, J. S. M., Loría‐Salazar, S. M., Holmes, H. A., & Sayer, A. M. (2025). Spatiotemporal gap‐filling of NASA deep blue satellite aerosol optical depth over the contiguous United States (CONUS) using the UNet 3+ architecture. *Earth and Space Science, 12*, e2025EA004338. [https://doi.org/10.1029/2025EA004338]()
