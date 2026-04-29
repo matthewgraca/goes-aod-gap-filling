@@ -2,7 +2,7 @@
 
 Satellite retrievals of Aerosol Optical Depth (AOD) are widely used for monitoring smoke, dust, and air quality, but the resulting fields are spatially incomplete because of clouds, optically thick plumes, surface-related retrieval failures, and quality screening. These gaps bias downstream analysis toward scenes that are easiest for the satellite retrieval algorithm to observe.
 
-This project develops a deep learning system that reconstructs missing GOES AOD over California using a UNet3+ architecture conditioned on lagged GOES observations together with meteorological, fire, smoke, vegetation, and intended static terrain predictors. The work follows the gap-filling approach recently demonstrated for NASA Deep Blue AOD over the contiguous United States by Lee et al.[^2], and adapts that idea to the higher spatial and temporal resolution of GOES AOD.
+This project develops a deep learning system that reconstructs missing GOES AOD over California using a UNet3+ architecture conditioned on lagged GOES observations together with meteorological, fire, smoke, vegetation, and intended static terrain predictors. The work follows the gap-filling approach recently demonstrated for NASA Deep Blue AOD over the contiguous United States by [Lee et al.](https://doi.org/10.1029/2025EA004338), and adapts that idea to the higher spatial and temporal resolution of GOES AOD.
 
 The repository is organized into two main components:
 
@@ -17,7 +17,7 @@ The ingestion and training layers are related, but they are not yet tied togethe
 
 ### What Is AOD?
 
-AOD measures how much aerosol is present in a vertical column of the atmosphere, inferred from how much sunlight is scattered or absorbed along that column.[^1] When AOD is high, the atmosphere contains more aerosol particles such as smoke, dust, or anthropogenic pollution.
+AOD measures how much aerosol is present in a vertical column of the atmosphere, inferred from how much sunlight is scattered or absorbed along that column. See the [AERONET AOD explainer](https://aeronet.gsfc.nasa.gov/new_web/Documents/Aerosol_Optical_Depth.pdf) for more background. When AOD is high, the atmosphere contains more aerosol particles such as smoke, dust, or anthropogenic pollution.
 
 AOD is not a direct measurement of pollution at ground level. It represents the total aerosol loading through the full atmospheric column, from the surface upward.
 
@@ -49,7 +49,7 @@ The model architecture used here is UNet3+, an extension of the original UNet ar
 
 UNet3+ extends this design with full-scale skip connections. Rather than connecting only matching encoder and decoder levels, each decoder stage receives information from every encoder stage and from coarser decoder stages. This matters for AOD gap filling because missing values do not depend only on neighboring pixels. Sometimes the model needs local texture, sometimes plume-scale structure, and sometimes broader meteorological context.
 
-UNet3+ is designed to combine all of those scales more effectively than a simpler encoder-decoder model, and a closely related formulation has recently been used for CONUS-scale AOD gap filling.[^2]
+UNet3+ is designed to combine all of those scales more effectively than a simpler encoder-decoder model, and a closely related formulation has recently been used for [CONUS-scale AOD gap filling](https://doi.org/10.1029/2025EA004338).
 
 ## Model Overview
 
@@ -60,7 +60,7 @@ The model is intended to reconstruct missing hourly GOES AOD fields over Califor
 ### Data Sources
 
 - Aerosol Optical Depth: [GOES Aerosol Optical Depth](https://www.ncei.noaa.gov/metadata/geoportal/rest/metadata/item/gov.noaa.ncdc:C01511/html)
-- Meteorology: [High Resolution Rapid Refresh](https://rapidrefresh.noaa.gov/hrrr/)[^3]
+- Meteorology: [High Resolution Rapid Refresh](https://rapidrefresh.noaa.gov/hrrr/)
 - Vegetation: MODIS NDVI
 - Intended orography source: [ASTER Global Digital Elevation Map](https://asterweb.jpl.nasa.gov/gdem.asp)
 - Fire detection: [GOES Fire/Hot Spot Characterization](https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C01520)
@@ -83,7 +83,7 @@ A fully convolutional, multi-scale architecture such as UNet3+ is therefore well
 
 ## Prior Work
 
-This project is primarily based on the work of Lee et al.[^2] We are tackling the same general problem, but using different data sources. The goals of this adaptation are:
+This project is primarily based on the work of [Lee et al.](https://doi.org/10.1029/2025EA004338). We are tackling the same general problem, but using different data sources. The goals of this adaptation are:
 
 1. Use an AOD product with higher spatial and temporal resolution.
 2. Identify and use independent variables that can match this new resolution.
@@ -92,6 +92,6 @@ Due to the increased spatial resolution, the current target area is reduced from
 
 ## References
 
-[^1]: https://aeronet.gsfc.nasa.gov/new_web/Documents/Aerosol_Optical_Depth.pdf
-[^2]: Lee, J. S. M., Loría-Salazar, S. M., Holmes, H. A., & Sayer, A. M. (2025). Spatiotemporal gap-filling of NASA deep blue satellite aerosol optical depth over the contiguous United States (CONUS) using the UNet 3+ architecture. *Earth and Space Science, 12*, e2025EA004338. https://doi.org/10.1029/2025EA004338
-[^3]: https://journals.ametsoc.org/configurable/content/journals$002fwefo$002f37$002f8$002fWAF-D-21-0151.1.xml
+1. Lee, J. S. M., Loría‐Salazar, S. M., Holmes, H. A., & Sayer, A. M. (2025). Spatiotemporal gap‐filling of NASA deep blue satellite aerosol optical depth over the contiguous United States (CONUS) using the UNet 3+ architecture. *Earth and Space Science, 12*, e2025EA004338. [https://doi.org/10.1029/2025EA004338](https://doi.org/10.1029/2025EA004338)
+2. [AERONET Aerosol Optical Depth explainer](https://aeronet.gsfc.nasa.gov/new_web/Documents/Aerosol_Optical_Depth.pdf)
+3. [High Resolution Rapid Refresh reference](https://journals.ametsoc.org/configurable/content/journals$002fwefo$002f37$002f8$002fWAF-D-21-0151.1.xml)
